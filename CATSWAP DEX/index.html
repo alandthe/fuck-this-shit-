@@ -5,12 +5,669 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CatSwap DEX</title>
   <link rel="stylesheet" href="./assets/style.css">
+  <style>
+        :root {
+            --primary-purple: #6a0dad;
+            --light-purple: #9b59b6;
+            --lighter-purple: #e6d4f0;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --dark-gray: #333333;
+            --error-red: #ff6b6b;
+            --cat-pink: #ff9ff3;
+            --cat-blue: #48dbfb;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            background-color: var(--white);
+            color: var(--dark-gray);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .brand-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--cat-pink) 100%);
+            z-index: -1;
+            border-bottom-left-radius: 50% 20%;
+            border-bottom-right-radius: 50% 20%;
+        }
+        
+        .cat-icon {
+            position: absolute;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .cat-icon-1 {
+            top: 50px;
+            right: 10%;
+            width: 150px;
+            transform: rotate(15deg);
+        }
+        
+        .cat-icon-2 {
+            bottom: 100px;
+            left: 5%;
+            width: 100px;
+            transform: rotate(-10deg);
+        }
+        
+        .header {
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .main-title {
+            color: var(--white);
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, var(--cat-pink), var(--cat-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 0 20px;
+        }
+        
+        .sub-title {
+            color: var(--white);
+            font-size: 1.2rem;
+            margin: 5px 0 0 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .connect-wallet {
+            background-color: var(--cat-pink);
+            color: var(--white);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .connect-wallet:hover {
+            background-color: var(--light-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .swap-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            border: 2px solid var(--lighter-purple);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .swap-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--cat-pink), var(--primary-purple), var(--cat-blue));
+        }
+        
+        .swap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .swap-title {
+            color: var(--primary-purple);
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, var(--primary-purple), var(--light-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .token-input {
+            background-color: var(--light-gray);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .token-input:hover {
+            border-color: var(--light-purple);
+            box-shadow: 0 2px 8px rgba(154, 89, 182, 0.1);
+        }
+        
+        .token-input-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .token-label {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            font-weight: bold;
+        }
+        
+        .token-balance {
+            font-size: 0.8rem;
+            color: var(--light-purple);
+            font-weight: bold;
+        }
+        
+        .token-input-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .token-amount {
+            border: none;
+            background: transparent;
+            font-size: 1.8rem;
+            width: 60%;
+            outline: none;
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+            color: var(--primary-purple);
+            font-weight: bold;
+        }
+        
+        .token-amount::placeholder {
+            color: var(--lighter-purple);
+        }
+        
+        .token-select {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(to right, var(--lighter-purple), var(--white));
+            padding: 10px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--lighter-purple);
+        }
+        
+        .token-select:hover {
+            background: linear-gradient(to right, var(--light-purple), var(--white));
+            transform: translateY(-2px);
+        }
+        
+        .token-icon {
+            width: 28px;
+            height: 28px;
+            margin-right: 8px;
+            border-radius: 50%;
+            border: 2px solid var(--white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .token-symbol {
+            font-weight: bold;
+            color: var(--primary-purple);
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .swap-button {
+            background: linear-gradient(to right, var(--cat-pink), var(--primary-purple));
+            color: var(--white);
+            border: none;
+            width: 100%;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .swap-button:hover {
+            background: linear-gradient(to right, var(--primary-purple), var(--cat-blue));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .swap-arrow {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .arrow-circle {
+            background: linear-gradient(to bottom, var(--cat-pink), var(--primary-purple));
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 2px solid white;
+        }
+        
+        .arrow-circle:hover {
+            transform: rotate(180deg) scale(1.1);
+            background: linear-gradient(to bottom, var(--primary-purple), var(--cat-blue));
+        }
+        
+        .liquidity-box {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            border: 2px solid var(--lighter-purple);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .liquidity-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--cat-blue), var(--primary-purple), var(--cat-pink));
+        }
+        
+        .liquidity-title {
+            color: var(--primary-purple);
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--primary-purple), var(--cat-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .liquidity-button {
+            background: linear-gradient(to right, var(--cat-blue), var(--primary-purple));
+            color: var(--white);
+            border: none;
+            width: 100%;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .liquidity-button:hover {
+            background: linear-gradient(to right, var(--primary-purple), var(--cat-pink));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .liquidity-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .remove-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        .remove-option {
+            background-color: var(--lighter-purple);
+            color: var(--primary-purple);
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .remove-option:hover {
+            background: linear-gradient(to bottom, var(--lighter-purple), var(--light-purple));
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+        
+        .position-box {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            border: 2px solid var(--lighter-purple);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .position-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--cat-pink), var(--cat-blue), var(--primary-purple));
+        }
+        
+        .position-title {
+            color: var(--primary-purple);
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--cat-pink), var(--primary-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .position-details {
+            background-color: var(--light-gray);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 10px;
+            border: 1px solid var(--lighter-purple);
+        }
+        
+        .position-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .position-label {
+            color: var(--dark-gray);
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .position-value {
+            color: var(--primary-purple);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .price-info {
+            font-size: 1rem;
+            color: var(--dark-gray);
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: var(--lighter-purple);
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        
+        .website-link {
+            margin-top: 20px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .website-link a {
+            color: var(--primary-purple);
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background-color: var(--lighter-purple);
+        }
+        
+        .website-link a:hover {
+            color: var(--white);
+            background-color: var(--primary-purple);
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .token-menu {
+            position: absolute;
+            background-color: var(--white);
+            border: 1px solid var(--lighter-purple);
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 100;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            display: none;
+        }
+        
+        .token-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .token-option:hover {
+            background-color: var(--lighter-purple);
+            transform: translateX(5px);
+        }
+        
+        .error-message {
+            color: var(--error-red);
+            font-size: 0.9rem;
+            text-align: center;
+            margin: 10px 0;
+            min-height: 16px;
+            font-weight: bold;
+        }
+        
+        .equal-value-notice {
+            background-color: var(--lighter-purple);
+            color: var(--primary-purple);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+            border: 1px dashed var(--light-purple);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
   <div class="brand-background"></div>
   
-  <!-- Your existing interface HTML here -->
-  <!-- Keep all your current HTML structure -->
+  <img src="https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/wc-token.png" class="cat-icon cat-icon-1 floating" alt="Cat Icon">
+  <img src="https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/sonic-token.png" class="cat-icon cat-icon-2 floating" alt="Cat Icon">
+  
+  <div class="header">
+    <h1 class="main-title pulse">🐱 CATSWAP DEX</h1>
+    <p class="sub-title">The purr-fect place to swap tokens! 🎉</p>
+  </div>
+  
+  <button class="connect-wallet" id="connect-wallet">🔗 Connect Wallet</button>
+  
+  <div class="swap-container">
+    <div class="swap-header">
+      <div class="swap-title">🔁 Swap Tokens</div>
+    </div>
+    
+    <div class="token-input">
+      <div class="token-input-header">
+        <span class="token-label">You pay</span>
+        <span class="token-balance">Balance: 0.0</span>
+      </div>
+      <div class="token-input-content">
+        <input type="number" class="token-amount" placeholder="0.0" id="from-amount">
+        <div class="token-select" id="from-token-select">
+          <img src="https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/wc-token.png" class="token-icon" alt="WC">
+          <span class="token-symbol">WC</span>
+          <span>▼</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="swap-arrow">
+      <div class="arrow-circle" id="swap-direction">↓</div>
+    </div>
+    
+    <div class="token-input">
+      <div class="token-input-header">
+        <span class="token-label">You receive</span>
+        <span class="token-balance">Balance: 0.0</span>
+      </div>
+      <div class="token-input-content">
+        <input type="number" class="token-amount" placeholder="0.0" id="to-amount">
+        <div class="token-select" id="to-token-select">
+          <img src="https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/sonic-token.png" class="token-icon" alt="S">
+          <span class="token-symbol">S</span>
+          <span>▼</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="price-info" id="price-info">1 WC = 1.034 S ($1.02)</div>
+    
+    <button class="swap-button" id="swap-button">✨ SWAP NOW ✨</button>
+  </div>
+  
+  <div class="liquidity-box">
+    <div class="liquidity-title">💧 Add Liquidity</div>
+    <div class="equal-value-notice">🐾 Must provide equal USD value of both tokens (50% WC, 50% S)</div>
+    
+    <div class="token-input">
+      <div class="token-input-header">
+        <span class="token-label">WC Amount</span>
+        <span class="token-balance">Balance: 0.0</span>
+      </div>
+      <div class="token-input-content">
+        <input type="number" class="token-amount" placeholder="0.0" id="wc-amount">
+        <div class="token-select">
+          <img src="https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/wc-token.png" class="token-icon" alt="WC">
+          <span class="token-symbol">WC</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="token-input">
+      <div class="token-input-header">
+        <span class="token-label">S Amount</span>
+        <span class="token-balance">Balance: 0.0</span>
+      </div>
+      <div class="token-input-content">
+        <input type="number" class="token-amount" placeholder="0.0" id="s-amount">
+        <div class="token-select">
+          <img src="https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/sonic-token.png" class="token-icon" alt="S">
+          <span class="token-symbol">S</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="error-message" id="liquidity-error"></div>
+    
+    <button class="liquidity-button" id="add-liquidity-button" disabled>🚀 ADD LIQUIDITY</button>
+  </div>
+  
+  <div class="liquidity-box">
+    <div class="liquidity-title">🔥 Remove Liquidity</div>
+    
+    <div class="remove-options">
+      <button class="remove-option">25%</button>
+      <button class="remove-option">50%</button>
+      <button class="remove-option">75%</button>
+      <button class="remove-option">100%</button>
+    </div>
+    
+    <button class="liquidity-button">💧 REMOVE LIQUIDITY</button>
+  </div>
+  
+  <div class="position-box">
+    <div class="position-title">📊 Your Liquidity Position</div>
+    
+    <div class="position-details">
+      <div class="position-row">
+        <span class="position-label">Your total LP tokens</span>
+        <span class="position-value">0.0</span>
+      </div>
+      <div class="position-row">
+        <span class="position-label">Pooled WC</span>
+        <span class="position-value">0.0</span>
+      </div>
+      <div class="position-row">
+        <span class="position-label">Pooled S</span>
+        <span class="position-value">0.0</span>
+      </div>
+      <div class="position-row">
+        <span class="position-label">Your pool share</span>
+        <span class="position-value">0%</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="website-link">
+    <a href="https://wagmicat.online/" target="_blank">🌐 Visit wagmicat.online</a>
+  </div>
 
   <!-- Scripts -->
   <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
@@ -21,5 +678,233 @@
   <script src="./js/tokens.js"></script>
   <script src="./js/swaps.js"></script>
   <script src="./js/liquidity.js"></script>
+  
+  <script>
+    // Token prices (in a real app, these would come from your AMM pool)
+    const WC_PRICE = 1.02; // $1.02 per WC
+    const S_PRICE = 0.98;  // $0.98 per S
+    
+    // Token switching functionality
+    const fromTokenSelect = document.getElementById('from-token-select');
+    const toTokenSelect = document.getElementById('to-token-select');
+    const swapDirection = document.getElementById('swap-direction');
+    const fromAmount = document.getElementById('from-amount');
+    const toAmount = document.getElementById('to-amount');
+    const priceInfo = document.getElementById('price-info');
+    const swapButton = document.getElementById('swap-button');
+    const connectWalletButton = document.getElementById('connect-wallet');
+    
+    // Liquidity elements
+    const wcAmountInput = document.getElementById('wc-amount');
+    const sAmountInput = document.getElementById('s-amount');
+    const addLiquidityButton = document.getElementById('add-liquidity-button');
+    const liquidityError = document.getElementById('liquidity-error');
+    
+    let fromToken = 'WC';
+    let toToken = 'S';
+    
+    // Function to calculate exchange rate
+    function calculateExchangeRate(from, to) {
+      if (from === 'WC' && to === 'S') {
+        return (1 / WC_PRICE) * S_PRICE;
+      } else {
+        return (1 / S_PRICE) * WC_PRICE;
+      }
+    }
+    
+    // Function to update token display and exchange rate
+    function updateTokenDisplay() {
+      const fromTokenImg = fromTokenSelect.querySelector('.token-icon');
+      const fromTokenSymbol = fromTokenSelect.querySelector('.token-symbol');
+      const toTokenImg = toTokenSelect.querySelector('.token-icon');
+      const toTokenSymbol = toTokenSelect.querySelector('.token-symbol');
+      
+      if (fromToken === 'WC') {
+        fromTokenImg.src = 'https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/wc-token.png';
+        fromTokenSymbol.textContent = 'WC';
+      } else {
+        fromTokenImg.src = 'https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/sonic-token.png';
+        fromTokenSymbol.textContent = 'S';
+      }
+      
+      if (toToken === 'WC') {
+        toTokenImg.src = 'https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/wc-token.png';
+        toTokenSymbol.textContent = 'WC';
+      } else {
+        toTokenImg.src = 'https://raw.githubusercontent.com/alandthe/pics/0f2940f3b4601d1121221fc789d7fa61fd336fb8/sonic-token.png';
+        toTokenSymbol.textContent = 'S';
+      }
+      
+      // Update price info
+      const rate = calculateExchangeRate(fromToken, toToken);
+      const fromPrice = fromToken === 'WC' ? WC_PRICE : S_PRICE;
+      
+      priceInfo.textContent = `1 ${fromToken} = ${rate.toFixed(4)} ${toToken} ($${fromPrice.toFixed(2)})`;
+      swapButton.textContent = `✨ SWAP ${fromToken} FOR ${toToken} ✨`;
+    }
+    
+    // Function to calculate received amount
+    function calculateReceivedAmount() {
+      const inputAmount = parseFloat(fromAmount.value) || 0;
+      const rate = calculateExchangeRate(fromToken, toToken);
+      const receivedAmount = inputAmount * rate;
+      
+      if (!isNaN(receivedAmount) && fromAmount === document.activeElement) {
+        toAmount.value = receivedAmount.toFixed(6);
+      }
+    }
+    
+    // Function to calculate needed amount
+    function calculateNeededAmount() {
+      const outputAmount = parseFloat(toAmount.value) || 0;
+      const rate = calculateExchangeRate(fromToken, toToken);
+      const neededAmount = outputAmount / rate;
+      
+      if (!isNaN(neededAmount) && toAmount === document.activeElement) {
+        fromAmount.value = neededAmount.toFixed(6);
+      }
+    }
+    
+    // Set up amount calculation listeners
+    fromAmount.addEventListener('input', calculateReceivedAmount);
+    toAmount.addEventListener('input', calculateNeededAmount);
+    
+    // Toggle swap direction
+    swapDirection.addEventListener('click', () => {
+      const temp = fromToken;
+      fromToken = toToken;
+      toToken = temp;
+      
+      // Also swap the amounts
+      const tempAmount = fromAmount.value;
+      fromAmount.value = toAmount.value;
+      toAmount.value = tempAmount;
+      
+      updateTokenDisplay();
+    });
+    
+    // Token selection (in a real app, this would show a menu with more options)
+    fromTokenSelect.addEventListener('click', () => {
+      const newToken = fromToken === 'WC' ? 'S' : 'WC';
+      if (newToken !== toToken) {
+        fromToken = newToken;
+        updateTokenDisplay();
+        calculateReceivedAmount();
+      }
+    });
+    
+    toTokenSelect.addEventListener('click', () => {
+      const newToken = toToken === 'WC' ? 'S' : 'WC';
+      if (newToken !== fromToken) {
+        toToken = newToken;
+        updateTokenDisplay();
+        calculateReceivedAmount();
+      }
+    });
+    
+    // Check liquidity pair values match (50/50 in USD value)
+    function checkLiquidityValues() {
+      const wcAmount = parseFloat(wcAmountInput.value) || 0;
+      const sAmount = parseFloat(sAmountInput.value) || 0;
+      
+      const wcValue = wcAmount * WC_PRICE;
+      const sValue = sAmount * S_PRICE;
+      
+      // Calculate the difference as a percentage of the average value
+      const avgValue = (wcValue + sValue) / 2;
+      const difference = Math.abs(wcValue - sValue);
+      const differencePercent = (difference / avgValue) * 100;
+      
+      if (wcAmount > 0 && sAmount > 0) {
+        if (differencePercent > 1) { // Allow 1% tolerance
+          liquidityError.textContent = `🐱 Values must be equal ($${wcValue.toFixed(2)} WC vs $${sValue.toFixed(2)} S)`;
+          addLiquidityButton.disabled = true;
+        } else {
+          liquidityError.textContent = '';
+          addLiquidityButton.disabled = false;
+        }
+      } else {
+        liquidityError.textContent = '';
+        addLiquidityButton.disabled = true;
+      }
+    }
+    
+    // Auto-calculate the other token amount when one is entered
+    function calculatePairAmount(inputElement, targetElement, inputPrice, targetPrice) {
+      const value = parseFloat(inputElement.value) || 0;
+      const inputValue = value * inputPrice;
+      const targetAmount = inputValue / targetPrice;
+      
+      if (!isNaN(targetAmount) && inputElement === document.activeElement) {
+        targetElement.value = targetAmount.toFixed(6);
+      }
+      
+      checkLiquidityValues();
+    }
+    
+    // Set up liquidity input listeners
+    wcAmountInput.addEventListener('input', () => {
+      calculatePairAmount(wcAmountInput, sAmountInput, WC_PRICE, S_PRICE);
+    });
+    
+    sAmountInput.addEventListener('input', () => {
+      calculatePairAmount(sAmountInput, wcAmountInput, S_PRICE, WC_PRICE);
+    });
+    
+    // Initialize display
+    updateTokenDisplay();
+    
+    // Connect wallet placeholder
+    connectWalletButton.addEventListener('click', () => {
+      connectWalletButton.innerHTML = '🐱 0x7f3...4a2b';
+      connectWalletButton.style.background = 'linear-gradient(to right, var(--primary-purple), var(--cat-blue))';
+      
+      // Add confetti effect
+      const confetti = document.createElement('div');
+      confetti.style.position = 'fixed';
+      confetti.style.top = '0';
+      confetti.style.left = '0';
+      confetti.style.width = '100%';
+      confetti.style.height = '100%';
+      confetti.style.pointerEvents = 'none';
+      confetti.style.zIndex = '1000';
+      document.body.appendChild(confetti);
+      
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.innerHTML = ['🐱', '🎉', '✨', '💜', '🦄'][Math.floor(Math.random() * 5)];
+          particle.style.position = 'absolute';
+          particle.style.fontSize = Math.random() * 20 + 10 + 'px';
+          particle.style.left = Math.random() * 100 + 'vw';
+          particle.style.top = '-50px';
+          particle.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+          confetti.appendChild(particle);
+          
+          // Remove particle after animation
+          setTimeout(() => {
+            particle.remove();
+          }, 5000);
+        }, i * 100);
+      }
+      
+      // Remove confetti after all particles are gone
+      setTimeout(() => {
+        confetti.remove();
+      }, 6000);
+    });
+    
+    // Add keyframe animation for confetti
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes fall {
+        to {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
 </body>
 </html>
