@@ -680,9 +680,6 @@
   <script src="./js/liquidity.js"></script>
   
   <script>
-    // Token prices (in a real app, these would come from your AMM pool)
-    const WC_PRICE = 1.02; // $1.02 per WC
-    const S_PRICE = 0.98;  // $0.98 per S
     
     // Token switching functionality
     const fromTokenSelect = document.getElementById('from-token-select');
@@ -854,10 +851,6 @@
     // Initialize display
     updateTokenDisplay();
     
-    // Connect wallet placeholder
-    connectWalletButton.addEventListener('click', () => {
-      connectWalletButton.innerHTML = '🐱 0x7f3...4a2b';
-      connectWalletButton.style.background = 'linear-gradient(to right, var(--primary-purple), var(--cat-blue))';
       
       // Add confetti effect
       const confetti = document.createElement('div');
